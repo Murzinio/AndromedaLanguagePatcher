@@ -36,6 +36,8 @@
 			this.textBox_Path = new System.Windows.Forms.TextBox();
 			this.button_Path = new System.Windows.Forms.Button();
 			this.button_Restore = new System.Windows.Forms.Button();
+			this.comboBox_TargetLanguage = new System.Windows.Forms.ComboBox();
+			this.label_TargetLanguage = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// comboBox_GameLanguage
@@ -43,7 +45,9 @@
 			this.comboBox_GameLanguage.FormattingEnabled = true;
 			this.comboBox_GameLanguage.Items.AddRange(new object[] {
             "Polish",
-            "Russian"});
+            "Russian",
+            "English_US",
+            "English_UK"});
 			this.comboBox_GameLanguage.Location = new System.Drawing.Point(44, 25);
 			this.comboBox_GameLanguage.Name = "comboBox_GameLanguage";
 			this.comboBox_GameLanguage.Size = new System.Drawing.Size(121, 21);
@@ -109,11 +113,36 @@
 			this.button_Restore.UseVisualStyleBackColor = true;
 			this.button_Restore.Click += new System.EventHandler(this.button_Restore_Click);
 			// 
+			// comboBox_TargetLanguage
+			// 
+			this.comboBox_TargetLanguage.FormattingEnabled = true;
+			this.comboBox_TargetLanguage.Items.AddRange(new object[] {
+            "Polish",
+            "Russian",
+            "English_US",
+            "English_UK"});
+			this.comboBox_TargetLanguage.Location = new System.Drawing.Point(223, 25);
+			this.comboBox_TargetLanguage.Name = "comboBox_TargetLanguage";
+			this.comboBox_TargetLanguage.Size = new System.Drawing.Size(121, 21);
+			this.comboBox_TargetLanguage.TabIndex = 7;
+			this.comboBox_TargetLanguage.SelectedIndexChanged += new System.EventHandler(this.comboBox_TargetLanguage_SelectedIndexChanged);
+			// 
+			// label_TargetLanguage
+			// 
+			this.label_TargetLanguage.AutoSize = true;
+			this.label_TargetLanguage.Location = new System.Drawing.Point(223, 9);
+			this.label_TargetLanguage.Name = "label_TargetLanguage";
+			this.label_TargetLanguage.Size = new System.Drawing.Size(85, 13);
+			this.label_TargetLanguage.TabIndex = 8;
+			this.label_TargetLanguage.Text = "Target language";
+			// 
 			// Patcher
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(464, 141);
+			this.Controls.Add(this.label_TargetLanguage);
+			this.Controls.Add(this.comboBox_TargetLanguage);
 			this.Controls.Add(this.button_Restore);
 			this.Controls.Add(this.button_Path);
 			this.Controls.Add(this.textBox_Path);
@@ -140,6 +169,8 @@
 		private System.Windows.Forms.TextBox textBox_Path;
 		private System.Windows.Forms.Button button_Path;
 		private System.Windows.Forms.Button button_Restore;
+		private System.Windows.Forms.ComboBox comboBox_TargetLanguage;
+		private System.Windows.Forms.Label label_TargetLanguage;
 	}
 }
 

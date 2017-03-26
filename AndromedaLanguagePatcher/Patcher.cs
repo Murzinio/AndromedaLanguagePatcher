@@ -12,21 +12,25 @@ using System.IO;
 
 namespace AndromedaLanguagePatcher
 {
-	enum GameLanguage
+	enum Language
 	{
 		Polish,
-		Russian
+		Russian,
+		English_US,
+		English_UK
 	}
 	public partial class Patcher : Form
 	{
 		string exePath;
 		
-		byte[] exePatched;
-		GameLanguage gameLanguage;
+		Language gameLanguage;
+		Language targetLanguage;
 
-		//offsets to change, first in array is all small letters - like "pl_pl"
-		int[] bytesToOriginalLanguageOffset = new int[2];
-		int[] bytesToEnglishOffset = new int[2];
+		// offsets to change
+		int bytesToOriginalLanguageOffsetLower;
+		int bytesToOriginalLanguageOffsetUpper;
+		int bytesToTargetLanguageOffsetLower;
+		int bytesToTargetLanguageOffsetUpper;
 
 		public Patcher()
 		{
@@ -50,7 +54,6 @@ namespace AndromedaLanguagePatcher
 			byte[] exeRead;
 			using (BinaryReader reader = new BinaryReader(File.Open(exePath, FileMode.Open)))
 			{
-				//exe = reader.ReadBytes(int.MaxValue);
 				const int bufferSize = 4096;
 				using (var ms = new MemoryStream())
 				{
@@ -61,94 +64,191 @@ namespace AndromedaLanguagePatcher
 					exeRead =  ms.ToArray();
 				}
 			}
-			
-
-
 
 			switch (gameLanguage)
 			{
-				case GameLanguage.Polish:
+				case Language.Polish:
 					for (int i = 0; i < exeRead.Length - 3; i++)
 					{
 						if (exeRead[i] == 0x70 && exeRead[i + 1] == 0x6C && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x70 && exeRead[i + 4] == 0x6C)
-							bytesToEnglishOffset[0] = i;
+							bytesToTargetLanguageOffsetLower = i;
 						else if (exeRead[i] == 0x70 && exeRead[i + 1] == 0x6C && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x50 && exeRead[i + 4] == 0x4C)
-							bytesToEnglishOffset[1] = i;
-						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x73)
-							bytesToOriginalLanguageOffset[0] = i;
-						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x55 && exeRead[i + 4] == 0x53)
-							bytesToOriginalLanguageOffset[1] = i;
+							bytesToTargetLanguageOffsetUpper = i;
 					}
 					break;
-				case GameLanguage.Russian:
+				case Language.Russian:
 					for (int i = 0; i < exeRead.Length; i++)
 					{
 						if (exeRead[i] == 0x72 && exeRead[i + 1] == 0x75 && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x72 && exeRead[i + 4] == 0x75)
-							bytesToEnglishOffset[0] = i;
+							bytesToTargetLanguageOffsetLower = i;
 						else if (exeRead[i] == 0x72 && exeRead[i + 1] == 0x75 && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x52 && exeRead[i + 4] == 0x55)
-							bytesToEnglishOffset[1] = i;
-						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x73)
-							bytesToOriginalLanguageOffset[0] = i;
-						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x55 && exeRead[i + 4] == 0x53)
-							bytesToOriginalLanguageOffset[1] = i;
+							bytesToTargetLanguageOffsetUpper = i;
 					}
 					break;
 			}
-			exePatched = exeRead;
+			switch (targetLanguage)
+			{
+				case Language.Polish:
+					for (int i = 0; i < exeRead.Length - 3; i++)
+					{
+						if (exeRead[i] == 0x70 && exeRead[i + 1] == 0x6C && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x70 && exeRead[i + 4] == 0x6C)
+							bytesToOriginalLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x70 && exeRead[i + 1] == 0x6C && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x50 && exeRead[i + 4] == 0x4C)
+							bytesToOriginalLanguageOffsetUpper = i;
+					}
+					break;
+				case Language.Russian:
+					for (int i = 0; i < exeRead.Length - 3; i++)
+					{
+						if (exeRead[i] == 0x72 && exeRead[i + 1] == 0x75 && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x72 && exeRead[i + 4] == 0x75)
+							bytesToOriginalLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x72 && exeRead[i + 1] == 0x75 && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x52 && exeRead[i + 4] == 0x55)
+							bytesToOriginalLanguageOffsetUpper = i;
+					}
+					break;
+				case Language.English_US:
+					for (int i = 0; i < exeRead.Length - 3; i++)
+					{
+						if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x73)
+							bytesToOriginalLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x55 && exeRead[i + 4] == 0x53)
+							bytesToOriginalLanguageOffsetUpper = i;
+					}
+					break;
+				case Language.English_UK:
+					for (int i = 0; i < exeRead.Length - 3; i++)
+					{
+						if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x6B)
+							bytesToOriginalLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x47 && exeRead[i + 4] == 0x42)
+							bytesToOriginalLanguageOffsetUpper = i;
+					}
+					break;
+			}
 		}
 		private void PatchExe()
 		{
-			//actual bytes to write, first in array is all small letters - like "pl_pl"
 			byte[] bytesOriginalLanguageLower = new byte[5];
 			byte[] bytesOriginalLanguageUpper = new byte[5];
-			byte[] bytesEnglishLower = new byte[5] { 0x65, 0x6E, 0x5F, 0x75, 0x73 };
-			byte[] bytesEnglishUpper = new byte[5] { 0x65, 0x6E, 0x5F, 0x55, 0x53 };
+			byte[] bytesTargetLanguageLower = new byte[5] { 0x65, 0x6E, 0x5F, 0x75, 0x73 };
+			byte[] bytesTargetLanguageUpper = new byte[5] { 0x65, 0x6E, 0x5F, 0x55, 0x53 };
+
+			bytesOriginalLanguageLower[2] = 0x5F;
+			bytesOriginalLanguageUpper[2] = 0x5F;
+			bytesTargetLanguageLower[2] = 0x5F;
+			bytesTargetLanguageUpper[2] = 0x5F;
 
 			switch (gameLanguage)
 			{
-				case GameLanguage.Polish:
+				case Language.Polish:
 					bytesOriginalLanguageLower[0] = 0x70;
 					bytesOriginalLanguageLower[1] = 0x6C;
-					bytesOriginalLanguageLower[2] = 0x5F;
 					bytesOriginalLanguageLower[3] = 0x70;
 					bytesOriginalLanguageLower[4] = 0x6C;
 
 					bytesOriginalLanguageUpper[0] = 0x70;
 					bytesOriginalLanguageUpper[1] = 0x6C;
-					bytesOriginalLanguageUpper[2] = 0x5F;
 					bytesOriginalLanguageUpper[3] = 0x50;
 					bytesOriginalLanguageUpper[4] = 0x4C;
 					break;
-				case GameLanguage.Russian:
+				case Language.Russian:
 					bytesOriginalLanguageLower[0] = 0x72;
 					bytesOriginalLanguageLower[1] = 0x75;
-					bytesOriginalLanguageLower[2] = 0x5F;
 					bytesOriginalLanguageLower[3] = 0x72;
 					bytesOriginalLanguageLower[4] = 0x75;
 
 					bytesOriginalLanguageUpper[0] = 0x72;
 					bytesOriginalLanguageUpper[1] = 0x75;
-					bytesOriginalLanguageUpper[2] = 0x5F;
 					bytesOriginalLanguageUpper[3] = 0x52;
 					bytesOriginalLanguageUpper[4] = 0x55;
 					break;
+				case Language.English_US:
+					bytesOriginalLanguageLower[0] = 0x65;
+					bytesOriginalLanguageLower[1] = 0x6E;
+					bytesOriginalLanguageLower[3] = 0x75;
+					bytesOriginalLanguageLower[4] = 0x73;
+
+					bytesOriginalLanguageUpper[0] = 0x65;
+					bytesOriginalLanguageUpper[1] = 0x6E;
+					bytesOriginalLanguageUpper[3] = 0x55;
+					bytesOriginalLanguageUpper[4] = 0x53;
+					break;
+				case Language.English_UK:
+					bytesOriginalLanguageLower[0] = 0x65;
+					bytesOriginalLanguageLower[1] = 0x6E;
+					bytesOriginalLanguageLower[3] = 0x75;
+					bytesOriginalLanguageLower[4] = 0x6B;
+
+					bytesOriginalLanguageUpper[0] = 0x65;
+					bytesOriginalLanguageUpper[1] = 0x6E;
+					bytesOriginalLanguageUpper[3] = 0x47;
+					bytesOriginalLanguageUpper[4] = 0x42;
+					break;
 			}
-			
+
+			switch (targetLanguage)
+			{
+				case Language.Polish:
+					bytesTargetLanguageLower[0] = 0x70;
+					bytesTargetLanguageLower[1] = 0x6C;
+					bytesTargetLanguageLower[3] = 0x70;
+					bytesTargetLanguageLower[4] = 0x6C;
+
+					bytesTargetLanguageUpper[0] = 0x70;
+					bytesTargetLanguageUpper[1] = 0x6C;
+					bytesTargetLanguageUpper[3] = 0x50;
+					bytesTargetLanguageUpper[4] = 0x4C;
+					break;
+				case Language.Russian:
+					bytesTargetLanguageLower[0] = 0x72;
+					bytesTargetLanguageLower[1] = 0x75;
+					bytesTargetLanguageLower[3] = 0x72;
+					bytesTargetLanguageLower[4] = 0x75;
+
+					bytesTargetLanguageUpper[0] = 0x72;
+					bytesTargetLanguageUpper[1] = 0x75;
+					bytesTargetLanguageUpper[3] = 0x52;
+					bytesTargetLanguageUpper[4] = 0x55;
+					break;
+				case Language.English_US:
+					bytesTargetLanguageLower[0] = 0x65;
+					bytesTargetLanguageLower[1] = 0x6E;
+					bytesTargetLanguageLower[3] = 0x75;
+					bytesTargetLanguageLower[4] = 0x73;
+
+					bytesTargetLanguageUpper[0] = 0x65;
+					bytesTargetLanguageUpper[1] = 0x6E;
+					bytesTargetLanguageUpper[3] = 0x55;
+					bytesTargetLanguageUpper[4] = 0x53;
+					break;
+				case Language.English_UK:
+					bytesTargetLanguageLower[0] = 0x65;
+					bytesTargetLanguageLower[1] = 0x6E;
+					bytesTargetLanguageLower[3] = 0x75;
+					bytesTargetLanguageLower[4] = 0x6B;
+
+					bytesTargetLanguageUpper[0] = 0x65;
+					bytesTargetLanguageUpper[1] = 0x6E;
+					bytesTargetLanguageUpper[3] = 0x47;
+					bytesTargetLanguageUpper[4] = 0x42;
+					break;
+			}
+
+
 			using (BinaryWriter writer = new BinaryWriter(File.Open(exePath, FileMode.Open)))
 			{
-
 				for (int i = 0; i < 5; i++)
 				{
-					writer.BaseStream.Position = bytesToEnglishOffset[0] + i;
-					writer.Write(bytesEnglishLower[i]);
+					writer.BaseStream.Position = bytesToTargetLanguageOffsetLower + i;
+					writer.Write(bytesTargetLanguageLower[i]);
 
-					writer.BaseStream.Position = bytesToOriginalLanguageOffset[0] + i;
+					writer.BaseStream.Position = bytesToTargetLanguageOffsetUpper + i;
+					writer.Write(bytesTargetLanguageUpper[i]);
+
+					writer.BaseStream.Position = bytesToOriginalLanguageOffsetLower + i;
 					writer.Write(bytesOriginalLanguageLower[i]);
 
-					writer.BaseStream.Position = bytesToEnglishOffset[1] + i;
-					writer.Write(bytesEnglishUpper[i]);
-
-					writer.BaseStream.Position = bytesToOriginalLanguageOffset[1] + i;
+					writer.BaseStream.Position = bytesToOriginalLanguageOffsetUpper + i;
 					writer.Write(bytesOriginalLanguageUpper[i]);
 				}
 			}
@@ -156,8 +256,30 @@ namespace AndromedaLanguagePatcher
 
 		private void comboBox_GameLanguage_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			button_Path.Enabled = true;
-			gameLanguage = (GameLanguage)comboBox_GameLanguage.SelectedIndex;
+			gameLanguage = (Language)comboBox_GameLanguage.SelectedIndex;
+			targetLanguage = (Language)comboBox_TargetLanguage.SelectedIndex;
+			if (gameLanguage == targetLanguage)
+			{
+				DialogResult resultMessage = MessageBox.Show("Target language cannot be the same as game language.", "Andromeda Language Patcher",
+				MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+				button_Path.Enabled = false;
+			}
+			else
+				button_Path.Enabled = true;
+		}
+
+		private void comboBox_TargetLanguage_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			gameLanguage = (Language)comboBox_GameLanguage.SelectedIndex;
+			targetLanguage = (Language)comboBox_TargetLanguage.SelectedIndex;
+			if (gameLanguage == targetLanguage)
+			{
+				DialogResult resultMessage = MessageBox.Show("Target language cannot be the same as game language.", "Andromeda Language Patcher",
+				MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+				button_Path.Enabled = false;
+			}
+			else
+				button_Path.Enabled = true;
 		}
 
 		private void button_Path_Click(object sender, EventArgs e)
@@ -219,5 +341,7 @@ namespace AndromedaLanguagePatcher
 			DialogResult resultMessage = MessageBox.Show("Original exe restored.", "Andromeda Language Patcher",
 			MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
+
+
 	}
 }
