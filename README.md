@@ -1,11 +1,11 @@
 # AndromedaLanguagePatcher
 Simple program for changing Mass Effect Andromeda language.  
 Currently supported:  
-* PL > EN  
-* RU > EN  
-  
-More options should be available soon.  
-  
+* PL
+* RU
+* EN_US
+* EN_UK
+
 Usage:  
 1. Build the program from Visual Studio or download release.  
 2. Download english localization files for current game version (1.04 as for 25/03/2017):    https://mega.nz/#!GRAgACRT!u2LGgxXlHZTYS_NSjoTza5iIu9nBxd8yiZrLMF9RmLs  
