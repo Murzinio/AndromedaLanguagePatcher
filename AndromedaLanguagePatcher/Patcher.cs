@@ -85,6 +85,24 @@ namespace AndromedaLanguagePatcher
 							bytesToTargetLanguageOffsetUpper = i;
 					}
 					break;
+				case Language.English_US:
+					for (int i = 0; i < exeRead.Length; i++)
+					{
+						if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x73)
+							bytesToTargetLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x55 && exeRead[i + 4] == 0x53)
+							bytesToTargetLanguageOffsetUpper = i;
+					}
+					break;
+				case Language.English_UK:
+					for (int i = 0; i < exeRead.Length; i++)
+					{
+						if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x75 && exeRead[i + 4] == 0x6B)
+							bytesToTargetLanguageOffsetLower = i;
+						else if (exeRead[i] == 0x65 && exeRead[i + 1] == 0x6E && exeRead[i + 2] == 0x5F && exeRead[i + 3] == 0x47 && exeRead[i + 4] == 0x42)
+							bytesToTargetLanguageOffsetUpper = i;
+					}
+					break;
 			}
 			switch (targetLanguage)
 			{
