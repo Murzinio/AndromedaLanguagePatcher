@@ -16,3 +16,7 @@ https://www.dropbox.com/s/6nzeygjmgcz4ujm/localisation_104.zip?dl=0
 4. Run the program, select your game language in the combobox, run patch and wait for confirmation message. If it won't work, verify game files in Origin and do it again.  
   
 Program creates backup of exe so you can restore it any time.  
+
+Known issues:
+
+Some people seem to have a problem with missing english audio when changing the language from English to Polish. Leaving only en.sb and en.toc files, and deleting the others in Data/Win32/Loc and Patch/Win32/Loc seems to fix that. 
