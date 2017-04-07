@@ -21,3 +21,5 @@ Program creates backup of exe so you can restore it any time.
 Known issues:
 
 Some people seem to have a problem with missing english audio when changing the language from English to Polish. Leaving only en.sb and en.toc files, and deleting the others in Data/Win32/Loc and Patch/Win32/Loc seems to fix that. 
+
+The language may be changed to other than was set as a target, simply change it in game options in that case, desired language will be available there.
