@@ -8,8 +8,8 @@ Currently supported:
 
 Usage:  
 1. Build the program from Visual Studio or download release.  
-2. Download localisation files for current game version (1.09 as for 27/07/2017):  
-https://mega.nz/#!aJwkzQoa!yhuBW5ZHr4iBUlssjB-GbBHRF-iljD4E61sJMI1zdH4
+2. Download localisation files for current game version (1.10 as for 26/08/2017):  
+https://mega.nz/#!uJgFHbST!onLZ1vnMj7hC0NLYGV1XZP5BuEWR0zjtlSE9WKJr9yg
   
 3. Unpack the archive (if you'll have problems with unpacking, use 7zip), and paste "Data" and "Patch" into game directory.  
 4. Run the program, select your game language in the combobox, run patch and wait for confirmation message. If it won't work, verify game files in Origin and do it again.  
